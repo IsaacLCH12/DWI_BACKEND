@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DwiApplication<DWI>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "Proyecto.Backend.DWI.DwiApplication",
+            "projectName": "DWI",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
