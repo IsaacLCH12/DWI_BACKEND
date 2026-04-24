@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import Proyecto.Backend.DWI.Models.Paciente;
 
@@ -28,10 +29,12 @@ public class PacienteService {
     // Crear paciente (Validando que nadie tenga el mismo correo)
     public Paciente crearPaciente(Paciente nuevoPaciente) {
 
+        
         boolean correoExiste = pacienteDB.stream()
                 .anyMatch(p -> p.getCorreo().equals(nuevoPaciente.getCorreo()));
 
         if (correoExiste) {
+            System.out.println("Error: El correo ya está asignado a otro perfil.");
             return null; // Rechaza si el DNI ya está registrado
         }
 

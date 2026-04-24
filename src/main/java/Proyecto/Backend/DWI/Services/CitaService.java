@@ -40,6 +40,11 @@ public Optional<Cita> obtenerPorId(Long id){
 /*POST: crear una nueva cita */
 public Cita crearCita(Cita nuevaCita){
 
+    if (nuevaCita.getFechaHora() == null) {
+            System.out.println("Error interno: La fecha y hora de la cita son obligatorias.");
+            return null; // Bloquea la creación de la cita
+        }
+
     Optional<Paciente> pacienteEncontrado = pacienteService.obtenerPorId(nuevaCita.getPacienteId());
     if (pacienteService.obtenerPorId(nuevaCita.getPacienteId()).isEmpty()) {
             System.out.println("Error: El paciente con ID " + nuevaCita.getPacienteId() + " no existe.");

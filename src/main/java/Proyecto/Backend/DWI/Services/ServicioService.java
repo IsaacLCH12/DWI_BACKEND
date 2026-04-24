@@ -29,6 +29,10 @@ public class ServicioService {
 /* POST */
 
     public Servicio crearServicio(Servicio nuevoServicio){
+        if (nuevoServicio.getPrecio() < 0) {
+            System.out.println("Error: El precio del servicio no puede ser negativo.");
+            return null; // Rechaza la creación
+        }
         nuevoServicio.setId(generadorId++);
         servicioDB.add(nuevoServicio);
         return nuevoServicio;
