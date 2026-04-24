@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-
-
 @RestController
 @RequestMapping("/api/citas")
 public class CitaController {
     
     public final CitaService citaService;
+
+    
 
     public CitaController(CitaService citaService){
         this.citaService= citaService;
@@ -47,10 +47,14 @@ public class CitaController {
     @PostMapping
     public ResponseEntity<Cita> crearCita(@RequestBody Cita cita) {
         Cita nuevaCita = citaService.crearCita(cita);
+        /*un manejo de error por si le falata agregar una casilla */
+        if (nuevaCita == null) {
+            return ResponseEntity.badRequest().build(); // Devuelve Error 400
+        }
         return new ResponseEntity<>(nuevaCita, HttpStatus.CREATED);
     }
-    /*PUT: actualizar cita */
 
+    /*PUT: actualizar cita */
     @PutMapping("/{id}")
     public ResponseEntity<Cita> actualizarCita(@PathVariable Long id, @RequestBody Cita detalleCita) {
        Cita citaActualizada = citaService.actualizarCita(detalleCita, id);
