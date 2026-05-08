@@ -2,25 +2,56 @@ package Proyecto.Backend.DWI.Models;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name ="citas")
 public class Cita {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long pacienteId;
-    private Long servicioId;
-    private String pacienteNombre;
-    private String especialidad;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pacienteId",nullable = false)
+    private Paciente pacienteId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="servicioId",nullable = false)
+    private Servicio servicioId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="medicoId",nullable = false)
+    private Medico medico;
+
+    @ManyToOne(fetch = FetchType.LAZY )
+    @JoinColumn(name = "sedeId", nullable = false)
+    private Sede sede;
+    
+    @Column(nullable = false)
     private LocalDateTime fechaHora;
-    private String estado;
+
+    @Column(nullable = false, length = 20)
+    private String estado; /** "pendiente","completado","cancelado" */
 
     public Cita() {
     }
 
 
-    public Cita(Long id, Long pacienteId, Long servicioId, String pacienteNombre, String especialidad, LocalDateTime fechaHora, String estado) {
+    public Cita(Long id, Paciente pacienteId, Servicio servicioId, Medico medico, Sede sede, LocalDateTime fechaHora, String estado) {
         this.id = id;
         this.pacienteId = pacienteId;
         this.servicioId = servicioId;
-        this.pacienteNombre = pacienteNombre;
-        this.especialidad = especialidad;
+        this.medico = medico;
+        this.sede = sede;
         this.fechaHora = fechaHora;
         this.estado = estado;
     }
@@ -33,36 +64,36 @@ public class Cita {
         this.id = id;
     }
 
-    public Long getPacienteId() {
+    public Paciente getPacienteId() {
         return this.pacienteId;
     }
 
-    public void setPacienteId(Long pacienteId) {
+    public void setPacienteId(Paciente pacienteId) {
         this.pacienteId = pacienteId;
     }
 
-    public Long getServicioId() {
+    public Servicio getServicioId() {
         return this.servicioId;
     }
 
-    public void setServicioId(Long servicioId) {
+    public void setServicioId(Servicio servicioId) {
         this.servicioId = servicioId;
     }
 
-    public String getPacienteNombre() {
-        return this.pacienteNombre;
+    public Medico getMedico() {
+        return this.medico;
     }
 
-    public void setPacienteNombre(String pacienteNombre) {
-        this.pacienteNombre = pacienteNombre;
+    public void setMedico(Medico medico) {
+        this.medico = medico;
     }
 
-    public String getEspecialidad() {
-        return this.especialidad;
+    public Sede getSede() {
+        return this.sede;
     }
 
-    public void setEspecialidad(String especialidad) {
-        this.especialidad = especialidad;
+    public void setSede(Sede sede) {
+        this.sede = sede;
     }
 
     public LocalDateTime getFechaHora() {
@@ -79,8 +110,5 @@ public class Cita {
 
     public void setEstado(String estado) {
         this.estado = estado;
-    }
-   
-
-
+    }    
 }
