@@ -18,10 +18,10 @@ Este proyecto propone el desarrollo de un sistema web utilizando Spring Boot que
 
 El sistema está organizado bajo arquitectura por capas:
 
-- **Models:** Contiene las clases Cita y Servicio
-- **Services:** Contiene la lógica del sistema
-- **Controllers:** Maneja las peticiones HTTP (API REST)
-- **resources:** Configuración del proyecto
+- *Models:* Contiene las clases Cita, Servicio, paciente y login
+- *Services:* Contiene la lógica del sistema
+- *Controllers:* Maneja las peticiones HTTP (API REST)
+- *resources:* Configuración del proyecto
 
 ## Ejecución del Proyecto
 
@@ -30,6 +30,27 @@ El sistema está organizado bajo arquitectura por capas:
 3. El servidor correrá en: http://localhost:8081
 
 ## Endpoints
+
+### 🔹 Registro
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| POST | /api/auth/register| Crear registro |
+
+### 🔹 Login
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| POST | /api/auth/login | Crear login |
+
+### 🔹 Paciente
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| GET | /api/pacientes | Listar paciente |
+| GET | /api/pacientes/{id} | Obtener paciente por id |
+| POST | /api/pacientes | Crear paciente |
+
 
 ### 🔹 Servicios
 
@@ -51,23 +72,43 @@ El sistema está organizado bajo arquitectura por capas:
 | PUT | /api/citas/{id} | Actualizar cita |
 | DELETE | /api/citas/{id} | Eliminar cita |
 
+
+
 ## Ejemplos de uso
+
+### Registrar un Paciente
+
+{
+  "dni": "77778888",
+  "password": "miPasswordSeguro123",
+  "nombre": "Jorge",
+  "apellido": "Chicana",
+  "correo": "jorge.chicana@mail.com",
+  "telefono": "987654321"
+}
+
+### Logearse
+
+{
+  "dni": "77778888",
+  "password": "miPasswordSeguro123"
+}
 
 ### Crear Servicio
 ```json
 {
   "especialidad": "Pediatria",
   "descripcion": "Atencion infantes",
-  "precio": 50
+  "precio": 50.00
 }
 
 ### Crear Cita
 
 {
-  "pacienteNombre": "Juan Perez",
-  "especialidad": "Pediatria",
-  "fechaHora": "2026-04-25T10:30:00",
-  "estado": "Pendiente"
+ 
+  "pacienteId": 1,
+  "servicioId": 1,
+  "fechaHora": "2026-05-20T14:30:00"
 }
 
 ## Evidencias
