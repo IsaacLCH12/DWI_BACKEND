@@ -1,19 +1,46 @@
 package Proyecto.Backend.DWI.Models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+
+@Entity
+@Table(name = "pacientes")
 public class Paciente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long usuarioId;
+
+    // Relación idéntica al estándar de tu compañera: Objeto completo, carga perezosa y no nulo
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuarioId", nullable = false)
+    private Usuario usuarioId; 
+
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false)
     private String apellido;
+
+    @Column(nullable = false)
     private String correo;
+
+    @Column(nullable = true) // El teléfono en tu diagrama no especifica restricciones, puede ser opcional
     private String telefono;
 
+    // --- CONSTRUCTOR VACÍO (Obligatorio para JPA) ---
     public Paciente() {
-
     }
 
-    public Paciente(Long id, Long usuarioId, String nombre, String apellido,
-            String correo, String telefono) {
+    // --- CONSTRUCTOR CON PARÁMETROS ---
+    public Paciente(Long id, Usuario usuarioId, String nombre, String apellido, String correo, String telefono) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.nombre = nombre;
@@ -22,6 +49,7 @@ public class Paciente {
         this.telefono = telefono;
     }
 
+    // --- GETTERS Y SETTERS ---
     public Long getId() {
         return id;
     }
@@ -30,11 +58,11 @@ public class Paciente {
         this.id = id;
     }
 
-    public Long getUsuarioId() {
+    public Usuario getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(Long usuarioId) {
+    public void setUsuarioId(Usuario usuarioId) {
         this.usuarioId = usuarioId;
     }
 
@@ -70,4 +98,3 @@ public class Paciente {
         this.telefono = telefono;
     }
 }
-
