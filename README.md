@@ -18,7 +18,7 @@ Este proyecto propone el desarrollo de un sistema web utilizando Spring Boot que
 
 El sistema está organizado bajo arquitectura por capas:
 
-- *Models:* Contiene las clases Cita y Servicio
+- *Models:* Contiene las clases Cita, Servicio, paciente y login
 - *Services:* Contiene la lógica del sistema
 - *Controllers:* Maneja las peticiones HTTP (API REST)
 - *resources:* Configuración del proyecto
@@ -30,6 +30,27 @@ El sistema está organizado bajo arquitectura por capas:
 3. El servidor correrá en: http://localhost:8081
 
 ## Endpoints
+
+### 🔹 Registro
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| POST | /api/auth/register| Crear registro |
+
+### 🔹 Login
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| POST | /api/auth/login | Crear login |
+
+### 🔹 Paciente
+
+| Método | Endpoint | Descripción |
+|-------|---------|------------|
+| GET | /api/pacientes | Listar paciente |
+| GET | /api/pacientes/{id} | Obtener paciente por id |
+| POST | /api/pacientes | Crear paciente |
+
 
 ### 🔹 Servicios
 
@@ -50,6 +71,8 @@ El sistema está organizado bajo arquitectura por capas:
 | POST | /api/citas | Crear cita |
 | PUT | /api/citas/{id} | Actualizar cita |
 | DELETE | /api/citas/{id} | Eliminar cita |
+
+
 
 ## Ejemplos de uso
 
