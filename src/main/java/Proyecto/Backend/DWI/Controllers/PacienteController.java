@@ -1,5 +1,4 @@
 package Proyecto.Backend.DWI.Controllers;
-
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,15 +15,18 @@ import Proyecto.Backend.DWI.Services.PacienteService;
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacienteController {
+
     
     private final PacienteService pacienteService;
 
     public PacienteController(PacienteService pacienteService) {
         this.pacienteService = pacienteService;
+
     }
 
     @GetMapping
     public List<Paciente> listar() {
+
         return pacienteService.obtenerTodas();
     }
 
@@ -35,5 +37,6 @@ public class PacienteController {
             return ResponseEntity.badRequest().build(); // 400 Si el DNI está duplicado
         }
         return new ResponseEntity<>(nuevoPaciente, HttpStatus.CREATED); // 201 Creado
+
     }
 }

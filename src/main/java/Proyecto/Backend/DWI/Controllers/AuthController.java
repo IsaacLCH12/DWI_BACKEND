@@ -46,7 +46,7 @@ private final PacienteService pacienteService;
         }
         /*Crear el perfil del paciente */
         Paciente nuevoPaciente = new Paciente();
-        nuevoPaciente.setUsuarioId(usuarioCreado.getId()); 
+        nuevoPaciente.setUsuarioId(usuarioCreado); 
         nuevoPaciente.setNombre(registroPaciente.getNombre());
         nuevoPaciente.setApellido(registroPaciente.getApellido());
         nuevoPaciente.setCorreo(registroPaciente.getCorreo());
