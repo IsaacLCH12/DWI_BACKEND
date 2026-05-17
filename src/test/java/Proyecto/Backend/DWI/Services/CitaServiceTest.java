@@ -1,10 +1,5 @@
 package Proyecto.Backend.DWI.Services;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import org.junit.jupiter.api.Test;
-
-import Proyecto.Backend.DWI.Models.Cita;
 
 public class CitaServiceTest {
     

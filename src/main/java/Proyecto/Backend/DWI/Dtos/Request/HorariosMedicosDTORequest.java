@@ -65,4 +65,4 @@ public class HorariosMedicosDTORequest {
     public void setJavaHoraFin(LocalTime javaHoraFin) {
         this.HoraFin = javaHoraFin;
     }
-}S
+}

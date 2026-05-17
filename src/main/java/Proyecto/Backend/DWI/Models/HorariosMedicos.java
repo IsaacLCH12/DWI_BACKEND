@@ -13,7 +13,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "horariosMedico") // Nombre idéntico al del diagrama
-public class horariosMedicos {
+public class HorariosMedicos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +34,11 @@ public class horariosMedicos {
     private LocalTime horaFin; // En tu diagrama es LocalTime
 
     // --- CONSTRUCTOR VACÍO ---
-    public horariosMedicos() {
+    public HorariosMedicos() {
     }
 
     // --- CONSTRUCTOR LLENO ---
-    public horariosMedicos(Long id, Medico medicoId, Integer diaSemana, LocalTime horaInicio, LocalTime horaFin) {
+    public HorariosMedicos(Long id, Medico medicoId, Integer diaSemana, LocalTime horaInicio, LocalTime horaFin) {
         this.id = id;
         this.medicoId = medicoId;
         this.diaSemana = diaSemana;
