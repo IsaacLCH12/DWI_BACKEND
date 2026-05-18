@@ -20,6 +20,6 @@ public interface PacienteRepository extends JpaRepository<Paciente,Long>{
      List<Paciente> buscarPorNombreOApellido(@Param("termino") String termino);
 
      // Busca un Paciente entrando a su relación Usuario y comparando el DNI
-    @Query("SELECT p FROM Paciente p WHERE p.usuario.dni = :dni")
+    @Query("SELECT p FROM Paciente p WHERE p.usuarioId.dni = :dni")
     Optional<Paciente> buscarPorUsuarioDni(@Param("dni") String dni);
     }
