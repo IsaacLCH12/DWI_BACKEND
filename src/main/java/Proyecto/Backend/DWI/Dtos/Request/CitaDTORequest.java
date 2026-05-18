@@ -7,9 +7,6 @@ import jakarta.validation.constraints.NotNull;
 
 public class CitaDTORequest {
     
-    @NotNull (message = "El paciente es obligatorio")
-    private Long pacienteId;
-
     @NotNull (message = "El servicio es obligatorio")
     private Long servicioId;
 
@@ -25,14 +22,6 @@ public class CitaDTORequest {
 
 
     public CitaDTORequest() {
-    }
-
-    public Long getPacienteId() {
-        return this.pacienteId;
-    }
-
-    public void setPacienteId(Long pacienteId) {
-        this.pacienteId = pacienteId;
     }
 
     public Long getServicioId() {

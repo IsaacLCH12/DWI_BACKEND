@@ -12,7 +12,7 @@ import jakarta.persistence.FetchType;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "horariosMedico") // Nombre idéntico al del diagrama
+@Table(name = "horariosMedico") 
 public class HorariosMedicos {
 
     @Id
@@ -25,13 +25,13 @@ public class HorariosMedicos {
     private Medico medicoId; 
 
     @Column(nullable = false)
-    private Integer diaSemana; // En tu diagrama es de tipo Integer
+    private Integer diaSemana; 
 
     @Column(nullable = false)
-    private LocalTime horaInicio; // En tu diagrama es LocalTime
+    private LocalTime horaInicio; 
 
     @Column(nullable = false)
-    private LocalTime horaFin; // En tu diagrama es LocalTime
+    private LocalTime horaFin; 
 
     // --- CONSTRUCTOR VACÍO ---
     public HorariosMedicos() {

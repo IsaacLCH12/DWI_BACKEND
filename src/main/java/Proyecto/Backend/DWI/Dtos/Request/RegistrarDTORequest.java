@@ -1,17 +1,35 @@
-package Proyecto.Backend.DWI.Models;
+package Proyecto.Backend.DWI.Dtos.Request;
 
-public class RegistroPaciente {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+public class RegistrarDTORequest {
     
-    /*Datos de Seguridad (usuario) */
+    @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "^[0-9]{8}$", message = "El DNI debe tener 8 digitos")
     private String dni;
+
+    @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
-    /*Datos para los pacientes  */
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
+    @NotBlank(message = "El apellido es obligatorio")
     private String apellido;
+
+    @NotBlank(message = "El correo es obligatorio")
+    @Email(message = "Debe tener un correo valido")
     private String correo;
+
+    @NotBlank(message = "El telefono es obligatorio")
+    @Pattern(regexp = "^[0-9]{9}$",message = "El telefono debe tener 9 digitos")
     private String telefono;
 
+
+    public RegistrarDTORequest() {
+    }
 
     public String getDni() {
         return this.dni;
@@ -60,6 +78,4 @@ public class RegistroPaciente {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
-
-
 }

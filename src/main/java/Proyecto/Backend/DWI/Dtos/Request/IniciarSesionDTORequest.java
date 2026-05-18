@@ -1,9 +1,14 @@
-package Proyecto.Backend.DWI.Models;
+package Proyecto.Backend.DWI.Dtos.Request;
 
-public class Login {
+import jakarta.validation.constraints.NotBlank;
+
+public class IniciarSesionDTORequest {
+    
+    @NotBlank(message = "El DNI es obligatorio")
     private String dni;
-    private String password;
 
+    @NotBlank(message = "La contraseña es obligatoria")
+    private String password;
 
     public String getDni() {
         return this.dni;
