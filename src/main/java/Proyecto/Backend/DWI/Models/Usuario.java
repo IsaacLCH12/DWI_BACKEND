@@ -1,9 +1,27 @@
 package Proyecto.Backend.DWI.Models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false,length = 8,unique = true)
     private String dni;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false,length = 20)
     private String rol;
 
     public Usuario() {

@@ -2,7 +2,7 @@ package Proyecto.Backend.DWI.Dtos.Response;
 
 import java.time.LocalTime;
 
-public class HorariosMedicosDTOResponse {
+public class HorariosMedicosDTOresponse {
 
     private Long id;
     private Long medicoId; // Solo devolvemos la FK limpia numéricamente
@@ -11,11 +11,11 @@ public class HorariosMedicosDTOResponse {
     private LocalTime horaFin;
 
     // --- CONSTRUCTOR VACÍO ---
-    public HorariosMedicosDTOResponse() {
+    public HorariosMedicosDTOresponse() {
     }
 
     // --- CONSTRUCTOR LLENO ---
-    public HorariosMedicosDTOResponse(Long id, Long medicoId, Integer diaSemana, LocalTime horaInicio, LocalTime horaFin) {
+    public HorariosMedicosDTOresponse(Long id, Long medicoId, Integer diaSemana, LocalTime horaInicio, LocalTime horaFin) {
         this.id = id;
         this.medicoId = medicoId;
         this.diaSemana = diaSemana;
