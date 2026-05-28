@@ -12,38 +12,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import Proyecto.Backend.DWI.Dtos.Request.ServicioDTORequest;
-import Proyecto.Backend.DWI.Dtos.Response.ServicioDTOResponse;
-import Proyecto.Backend.DWI.Services.ServicioService;
+import Proyecto.Backend.DWI.Dtos.Request.MedicoDTORequest;
+import Proyecto.Backend.DWI.Dtos.Response.MedicoDTOResponse;
+import Proyecto.Backend.DWI.Services.MedicoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/servicios")
-public class ServicioController {
+@RequestMapping("/api/medicos")
+public class MedicoController {
 
-    private final ServicioService servicioService;
+    private final MedicoService medicoService;
 
-    public ServicioController(ServicioService servicioService) {
-        this.servicioService = servicioService;
+    public MedicoController(MedicoService medicoService) {
+        this.medicoService = medicoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ServicioDTOResponse>> listarServicios() {
+    public ResponseEntity<List<MedicoDTOResponse>> listarMedicos() {
 
-        return ResponseEntity.ok(servicioService.obtenerTodos());
+        return ResponseEntity.ok(medicoService.obtenerTodos());
     }
 
     @PostMapping
-    public ResponseEntity<?> crearServicio(
-            @Valid @RequestBody ServicioDTORequest request) {
+    public ResponseEntity<?> crearMedico(
+            @Valid @RequestBody MedicoDTORequest request) {
 
         try {
 
-            ServicioDTOResponse nuevoServicio =
-                    servicioService.crearServicio(request);
+            MedicoDTOResponse nuevoMedico =
+                    medicoService.crearMedico(request);
 
             return new ResponseEntity<>(
-                    nuevoServicio,
+                    nuevoMedico,
                     HttpStatus.CREATED);
 
         } catch (RuntimeException e) {
@@ -55,16 +55,16 @@ public class ServicioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarServicio(
+    public ResponseEntity<?> actualizarMedico(
             @PathVariable Long id,
-            @Valid @RequestBody ServicioDTORequest request) {
+            @Valid @RequestBody MedicoDTORequest request) {
 
         try {
 
-            ServicioDTOResponse servicioActualizado =
-                    servicioService.actualizarServicio(id, request);
+            MedicoDTOResponse medicoActualizado =
+                    medicoService.actualizarMedico(id, request);
 
-            return ResponseEntity.ok(servicioActualizado);
+            return ResponseEntity.ok(medicoActualizado);
 
         } catch (RuntimeException e) {
 

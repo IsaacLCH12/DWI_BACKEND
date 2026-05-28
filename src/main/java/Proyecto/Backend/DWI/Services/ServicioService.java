@@ -1,51 +1,102 @@
 package Proyecto.Backend.DWI.Services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import Proyecto.Backend.DWI.Dtos.Request.ServicioDTORequest;
+import Proyecto.Backend.DWI.Dtos.Response.ServicioDTOResponse;
+import Proyecto.Backend.DWI.Models.Servicio;
+import Proyecto.Backend.DWI.Repositories.ServicioRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ServicioService {
-    
-//     private List<Servicio> servicioDB = new ArrayList<>();
-//     private Long generadorId = 1L;
 
-//     public List<Servicio> obtenerTodos(){
-//         return servicioDB;
-//     }
-// /*Get por id */
-//     public Optional<Servicio> obtenerPorId(Long id){
-//         return servicioDB.stream()
-//         .filter(servicio -> servicio.getId().equals(id))
-//         .findFirst();
-//     }
+    private final ServicioRepository servicioRepository;
 
-// /* POST */
+    public ServicioService(ServicioRepository servicioRepository) {
+        this.servicioRepository = servicioRepository;
+    }
 
-//     public Servicio crearServicio(Servicio nuevoServicio){
-//         if (nuevoServicio.getPrecio() < 0) {
-//             System.out.println("Error: El precio del servicio no puede ser negativo.");
-//             return null; // Rechaza la creación
-//         }
-//         nuevoServicio.setId(generadorId++);
-//         servicioDB.add(nuevoServicio);
-//         return nuevoServicio;
-//     }
+    // READ: Listar todos los servicios
+    public List<ServicioDTOResponse> obtenerTodos() {
 
-//     /*PUT */
-//     public Servicio actualizarServicio(Servicio servicioActualizado, Long id){
-//        for(Servicio servicio : servicioDB){
-//         if(servicio.getId().equals(id)){
-//             servicio.setEspecialidad(servicioActualizado.getEspecialidad());
-//             servicio.setDescripcion(servicioActualizado.getDescripcion());
-//             servicio.setPrecio(servicioActualizado.getPrecio());
-//             return servicio;
-//         }
-//        } 
-//        return null;
-//     }
-//     /*DELETE */
-//     public boolean eliminarServicio(Long id){
-//         return servicioDB.removeIf(servicio -> servicio.getId().equals(id));
-        
-//     }
+        List<Servicio> serviciosEntity = servicioRepository.findAll();
+
+        return mapearListaServicios(serviciosEntity);
+    }
+
+    // CREATE: Registrar servicio
+    @Transactional
+    public ServicioDTOResponse crearServicio(ServicioDTORequest request) {
+
+        Servicio nuevoServicio = new Servicio();
+
+        nuevoServicio.setNombre(request.getNombre());
+        nuevoServicio.setDescripcion(request.getDescripcion());
+        nuevoServicio.setPrecio(request.getPrecio());
+        nuevoServicio.setDuracionMin(request.getDuracionMin());
+        nuevoServicio.setEstado(request.getEstado());
+
+        Servicio servicioGuardado =
+                servicioRepository.save(nuevoServicio);
+
+        return convertirADTOResponse(servicioGuardado);
+    }
+
+    // UPDATE: Actualizar servicio
+    @Transactional
+    public ServicioDTOResponse actualizarServicio(
+            Long id,
+            ServicioDTORequest request) {
+
+        Servicio servicioExistente = servicioRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Servicio no encontrado con el ID: " + id));
+
+        servicioExistente.setNombre(request.getNombre());
+        servicioExistente.setDescripcion(request.getDescripcion());
+        servicioExistente.setPrecio(request.getPrecio());
+        servicioExistente.setDuracionMin(request.getDuracionMin());
+        servicioExistente.setEstado(request.getEstado());
+
+        Servicio servicioActualizado =
+                servicioRepository.save(servicioExistente);
+
+        return convertirADTOResponse(servicioActualizado);
+    }
+
+    // Métodos auxiliares
+    private List<ServicioDTOResponse> mapearListaServicios(
+            List<Servicio> serviciosEntity) {
+
+        List<ServicioDTOResponse> listaResponse =
+                new ArrayList<>();
+
+        for (Servicio s : serviciosEntity) {
+
+            listaResponse.add(convertirADTOResponse(s));
+        }
+
+        return listaResponse;
+    }
+
+    private ServicioDTOResponse convertirADTOResponse(
+            Servicio servicio) {
+
+        ServicioDTOResponse response =
+                new ServicioDTOResponse();
+
+        response.setId(servicio.getId());
+        response.setNombre(servicio.getNombre());
+        response.setDescripcion(servicio.getDescripcion());
+        response.setPrecio(servicio.getPrecio());
+        response.setDuracionMin(servicio.getDuracionMin());
+        response.setEstado(servicio.getEstado());
+
+        return response;
+    }
 }

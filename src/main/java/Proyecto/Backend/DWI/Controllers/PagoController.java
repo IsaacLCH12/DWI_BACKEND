@@ -12,38 +12,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import Proyecto.Backend.DWI.Dtos.Request.ServicioDTORequest;
-import Proyecto.Backend.DWI.Dtos.Response.ServicioDTOResponse;
-import Proyecto.Backend.DWI.Services.ServicioService;
+import Proyecto.Backend.DWI.Dtos.Request.PagoDTORequest;
+import Proyecto.Backend.DWI.Dtos.Response.PagoDTOResponse;
+import Proyecto.Backend.DWI.Services.PagoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/servicios")
-public class ServicioController {
+@RequestMapping("/api/pagos")
+public class PagoController {
 
-    private final ServicioService servicioService;
+    private final PagoService pagoService;
 
-    public ServicioController(ServicioService servicioService) {
-        this.servicioService = servicioService;
+    public PagoController(PagoService pagoService) {
+        this.pagoService = pagoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ServicioDTOResponse>> listarServicios() {
+    public ResponseEntity<List<PagoDTOResponse>> listarPagos() {
 
-        return ResponseEntity.ok(servicioService.obtenerTodos());
+        return ResponseEntity.ok(pagoService.obtenerTodos());
     }
 
     @PostMapping
-    public ResponseEntity<?> crearServicio(
-            @Valid @RequestBody ServicioDTORequest request) {
+    public ResponseEntity<?> crearPago(
+            @Valid @RequestBody PagoDTORequest request) {
 
         try {
 
-            ServicioDTOResponse nuevoServicio =
-                    servicioService.crearServicio(request);
+            PagoDTOResponse nuevoPago =
+                    pagoService.crearPago(request);
 
             return new ResponseEntity<>(
-                    nuevoServicio,
+                    nuevoPago,
                     HttpStatus.CREATED);
 
         } catch (RuntimeException e) {
@@ -55,16 +55,16 @@ public class ServicioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarServicio(
+    public ResponseEntity<?> actualizarPago(
             @PathVariable Long id,
-            @Valid @RequestBody ServicioDTORequest request) {
+            @Valid @RequestBody PagoDTORequest request) {
 
         try {
 
-            ServicioDTOResponse servicioActualizado =
-                    servicioService.actualizarServicio(id, request);
+            PagoDTOResponse pagoActualizado =
+                    pagoService.actualizarPago(id, request);
 
-            return ResponseEntity.ok(servicioActualizado);
+            return ResponseEntity.ok(pagoActualizado);
 
         } catch (RuntimeException e) {
 
