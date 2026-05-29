@@ -2,6 +2,7 @@ package Proyecto.Backend.DWI.Configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,16 +29,29 @@ public class SecurityConfig {
         this.detailsServiceImpl = detailsServiceImpl;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
-            throws Exception {
+  @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        /* RUTAS PUBLICAS */
+                    .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                        /* 1. RUTAS 100% PÚBLICAS (No piden token) */
                         .requestMatchers("/api/auth/**").permitAll()
-                        /* SOLO LOS ADMIN PUEDEN CREAR ESTAS AREAS */
-                        .requestMatchers("/api/sedes/**", "/api/servicios/**").hasRole("ADMIN")
+                        
+                        /* 2. CATÁLOGOS DE LECTURA PÚBLICA (El paciente ve esto para armar su cita) */
+                        .requestMatchers(HttpMethod.GET, 
+                                "/api/sedes/activas", 
+                                "/api/servicios/activos", 
+                                "/api/medicos/filtrar",
+                                "/api/horarios/medico/**").permitAll()
+                        
+                        /* 3. LECTURAS PRIVADAS*/
+                        .requestMatchers(HttpMethod.GET, "/api/pacientes", "/api/pagos").hasRole("ADMIN")
+                        
+                        /* 4. CRUD ADMINISTRATIVO  */
+                        .requestMatchers("/api/sedes/**", "/api/servicios/**", "/api/medicos/**", "/api/horarios/**").hasRole("ADMIN")
+                        
+                        /* 5. TODO LO DEMÁS REQUIERE ESTAR LOGUEADO (Ej: Pagar, Ver Perfil) */
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -48,12 +62,12 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(detailsServiceImpl);
-        provider.setPasswordEncoder(passwordEncoder()); /* USA BCrypt para comparar */
+        provider.setPasswordEncoder(passwordEncoder()); 
         return provider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 

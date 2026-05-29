@@ -1,7 +1,7 @@
 package Proyecto.Backend.DWI.Services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,92 +11,72 @@ import Proyecto.Backend.DWI.Models.Servicio;
 import Proyecto.Backend.DWI.Repositories.ServicioRepository;
 import jakarta.transaction.Transactional;
 
+
 @Service
 public class ServicioService {
-
+    
     private final ServicioRepository servicioRepository;
+
 
     public ServicioService(ServicioRepository servicioRepository) {
         this.servicioRepository = servicioRepository;
     }
 
-    // READ: Listar todos los servicios
-    public List<ServicioDTOResponse> obtenerTodos() {
-
-        List<Servicio> serviciosEntity = servicioRepository.findAll();
-
-        return mapearListaServicios(serviciosEntity);
+    public List<ServicioDTOResponse> obtenerTodos(){
+        return servicioRepository.findAll().stream()
+        .map(this::convertirAResponse)
+        .collect(Collectors.toList());
     }
 
-    // CREATE: Registrar servicio
+    public List<ServicioDTOResponse> obtenerActivos(){
+        return servicioRepository.buscarServiciosActivos().stream()
+        .map(this::convertirAResponse)
+        .collect(Collectors.toList());
+    }
+
     @Transactional
-    public ServicioDTOResponse crearServicio(ServicioDTORequest request) {
+    public ServicioDTOResponse guardar(ServicioDTORequest request){
+        Servicio servicio = new Servicio();
+        servicio.setNombre(request.getNombre());
+        servicio.setDescripcion(request.getDescripcion());
+        servicio.setPrecio(request.getPrecio());
+        servicio.setDuracionMin(request.getDuracionMin());
+        servicio.setEstado(request.getEstado());
 
-        Servicio nuevoServicio = new Servicio();
-
-        nuevoServicio.setNombre(request.getNombre());
-        nuevoServicio.setDescripcion(request.getDescripcion());
-        nuevoServicio.setPrecio(request.getPrecio());
-        nuevoServicio.setDuracionMin(request.getDuracionMin());
-        nuevoServicio.setEstado(request.getEstado());
-
-        Servicio servicioGuardado =
-                servicioRepository.save(nuevoServicio);
-
-        return convertirADTOResponse(servicioGuardado);
+        return convertirAResponse(servicioRepository.save(servicio));
     }
 
-    // UPDATE: Actualizar servicio
     @Transactional
-    public ServicioDTOResponse actualizarServicio(
-            Long id,
-            ServicioDTORequest request) {
-
-        Servicio servicioExistente = servicioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Servicio no encontrado con el ID: " + id));
-
-        servicioExistente.setNombre(request.getNombre());
-        servicioExistente.setDescripcion(request.getDescripcion());
-        servicioExistente.setPrecio(request.getPrecio());
-        servicioExistente.setDuracionMin(request.getDuracionMin());
-        servicioExistente.setEstado(request.getEstado());
-
-        Servicio servicioActualizado =
-                servicioRepository.save(servicioExistente);
-
-        return convertirADTOResponse(servicioActualizado);
+    public ServicioDTOResponse actualizar(Long id,ServicioDTORequest request){
+        Servicio servicio = servicioRepository.findById(id)
+        .orElseThrow(()-> new RuntimeException("SERVICIO NO ENCONTRADO"));
+        servicio.setNombre(request.getNombre());
+        servicio.setDescripcion(request.getDescripcion());
+        servicio.setPrecio(request.getPrecio());
+        servicio.setDuracionMin(request.getDuracionMin());
+        servicio.setEstado(request.getEstado());
+        
+        return convertirAResponse(servicioRepository.save(servicio));
     }
 
-    // Métodos auxiliares
-    private List<ServicioDTOResponse> mapearListaServicios(
-            List<Servicio> serviciosEntity) {
-
-        List<ServicioDTOResponse> listaResponse =
-                new ArrayList<>();
-
-        for (Servicio s : serviciosEntity) {
-
-            listaResponse.add(convertirADTOResponse(s));
-        }
-
-        return listaResponse;
+    @Transactional
+    public void deshabilitar(Long id){
+        Servicio servicio = servicioRepository.findById(id)
+        .orElseThrow(()-> new RuntimeException("SERVICIO NO ENCONTRADO"));
+        servicio.setEstado(false);
+        servicioRepository.save(servicio);
     }
 
-    private ServicioDTOResponse convertirADTOResponse(
-            Servicio servicio) {
 
-        ServicioDTOResponse response =
-                new ServicioDTOResponse();
-
-        response.setId(servicio.getId());
-        response.setNombre(servicio.getNombre());
-        response.setDescripcion(servicio.getDescripcion());
-        response.setPrecio(servicio.getPrecio());
-        response.setDuracionMin(servicio.getDuracionMin());
-        response.setEstado(servicio.getEstado());
-
-        return response;
+    // --- MÉTODO PRIVADO PARA MAPEAR ---
+    private ServicioDTOResponse convertirAResponse(Servicio servicio) {
+        return new ServicioDTOResponse(
+                servicio.getId(),
+                servicio.getNombre(),
+                servicio.getDescripcion(),
+                servicio.getPrecio(),
+                servicio.getDuracionMin(),
+                servicio.getEstado()
+        );
     }
 }

@@ -2,61 +2,45 @@ package Proyecto.Backend.DWI.Dtos.Response;
 
 public class MedicoDTOResponse {
 
-    private Long id;
+   private Long id;
     private String nombre;
     private String apellido;
     private String fotoUrl;
     private String nombreSede;
+    private String nombreServicio;
+    private boolean estado;
 
-    public MedicoDTOResponse() {
-    }
+    public MedicoDTOResponse() {}
 
-    public MedicoDTOResponse(Long id, String nombre, String apellido, String fotoUrl, String nombreSede) {
-
+    public MedicoDTOResponse(Long id, String nombre, String apellido, String fotoUrl, 
+                             String nombreSede, String nombreServicio, boolean estado) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.fotoUrl = fotoUrl;
         this.nombreSede = nombreSede;
+        this.nombreServicio = nombreServicio;
+        this.estado = estado;
     }
 
-    public Long getId() {
-        return this.id;
-    }
+    public Long getId() { return this.id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNombre() { return this.nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getNombre() {
-        return this.nombre;
-    }
+    public String getApellido() { return this.apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getFotoUrl() { return this.fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
-    public String getApellido() {
-        return this.apellido;
-    }
+    public String getNombreSede() { return this.nombreSede; }
+    public void setNombreSede(String nombreSede) { this.nombreSede = nombreSede; }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
+    public String getNombreServicio() { return this.nombreServicio; }
+    public void setNombreServicio(String nombreServicio) { this.nombreServicio = nombreServicio; }
 
-    public String getFotoUrl() {
-        return this.fotoUrl;
-    }
-
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
-    }
-
-    public String getNombreSede() {
-        return this.nombreSede;
-    }
-
-    public void setNombreSede(String nombreSede) {
-        this.nombreSede = nombreSede;
-    }
+    public boolean isEstado() { return this.estado; }
+    public void setEstado(boolean estado) { this.estado = estado; }
 }

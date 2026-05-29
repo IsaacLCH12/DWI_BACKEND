@@ -64,8 +64,7 @@ public class AuthService {
 
         /*generamos token */
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuarioGuardado));
-        return new AuthDTOResponse(jwtToken);
-    }
+return new AuthDTOResponse(jwtToken, usuarioGuardado.getRol(), usuarioGuardado.getId());    }
     
     /*INICIAR SESION */
     public AuthDTOResponse iniciarSesion(IniciarSesionDTORequest request){
@@ -80,6 +79,5 @@ public class AuthService {
         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuario));
-        return new AuthDTOResponse(jwtToken);
-    }
+return new AuthDTOResponse(jwtToken, usuario.getRol(), usuario.getId());    }
 }

@@ -1,45 +1,82 @@
 package Proyecto.Backend.DWI.Services;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import Proyecto.Backend.DWI.Dtos.Request.PacienteRequestDTO;
+import Proyecto.Backend.DWI.Dtos.Response.PacienteDTOResponse;
 import Proyecto.Backend.DWI.Models.Paciente;
+import Proyecto.Backend.DWI.Models.Usuario;
+import Proyecto.Backend.DWI.Repositories.PacienteRepository;
+import Proyecto.Backend.DWI.Repositories.UsuarioRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PacienteService {
 
-    /* nuesta base de datos temporal */
-    private List<Paciente> pacienteDB = new ArrayList<>();
-    private Long generadorId = 1L;
+    private final PacienteRepository pacienteRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    /* GET LISTAR */
-    public List<Paciente> obtenerTodas() {
-        return pacienteDB;
+    public PacienteService(PacienteRepository pacienteRepository, UsuarioRepository usuarioRepository) {
+        this.pacienteRepository = pacienteRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public Optional<Paciente> obtenerPorId(Long id) {
-        return pacienteDB.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst();
+    public List<PacienteDTOResponse> obtenerTodas() {
+        return pacienteRepository.findAll().stream()
+                .map(this::convertirAResponse)
+                .collect(Collectors.toList());
     }
 
-    // Crear paciente (Validando que nadie tenga el mismo correo)
-    public Paciente crearPaciente(Paciente nuevoPaciente) {
-
-        
-        boolean correoExiste = pacienteDB.stream()
-                .anyMatch(p -> p.getCorreo().equals(nuevoPaciente.getCorreo()));
-
-        if (correoExiste) {
-            System.out.println("Error: El correo ya está asignado a otro perfil.");
-            return null; // Rechaza si el DNI ya está registrado
-        }
-
-        nuevoPaciente.setId(generadorId++);
-        pacienteDB.add(nuevoPaciente);
-        return nuevoPaciente;
+    public PacienteDTOResponse obtenerPorId(Long id) {
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        return convertirAResponse(paciente);
     }
 
+    @Transactional
+    public PacienteDTOResponse crearPaciente(PacienteRequestDTO request) {
+        // Buscamos al Usuario 
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Paciente nuevoPaciente = new Paciente();
+        nuevoPaciente.setUsuarioId(usuario);
+        nuevoPaciente.setNombre(request.getNombre());
+        nuevoPaciente.setApellido(request.getApellido());
+        nuevoPaciente.setCorreo(request.getCorreo());
+        nuevoPaciente.setTelefono(request.getTelefono());
+
+        Paciente guardado = pacienteRepository.save(nuevoPaciente);
+        return convertirAResponse(guardado);
+    }
+
+    @Transactional
+    public PacienteDTOResponse actualizarPaciente(Long id, PacienteRequestDTO request) {
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        paciente.setUsuarioId(usuario);
+        paciente.setNombre(request.getNombre());
+        paciente.setApellido(request.getApellido());
+        paciente.setCorreo(request.getCorreo());
+        paciente.setTelefono(request.getTelefono());
+
+        return convertirAResponse(pacienteRepository.save(paciente));
+    }
+
+ 
+    private PacienteDTOResponse convertirAResponse(Paciente paciente) {
+        return new PacienteDTOResponse(
+                paciente.getId(),
+                paciente.getUsuarioId().getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getCorreo(),
+                paciente.getTelefono()
+        );
+    }
 }
 

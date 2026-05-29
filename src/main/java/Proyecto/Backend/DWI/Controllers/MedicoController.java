@@ -1,21 +1,12 @@
 package Proyecto.Backend.DWI.Controllers;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import Proyecto.Backend.DWI.Dtos.Request.MedicoDTORequest;
 import Proyecto.Backend.DWI.Dtos.Response.MedicoDTOResponse;
 import Proyecto.Backend.DWI.Services.MedicoService;
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/medicos")
@@ -27,50 +18,51 @@ public class MedicoController {
         this.medicoService = medicoService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<MedicoDTOResponse>> listarMedicos() {
+    // RUTAS PÚBLICAS (Para los pacientes en Angular)
+      
+     /* Devuelve los doctores activos 
+     que atienden una especialidad en una sede específica.
+     */
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<MedicoDTOResponse>> filtrar(
+            @RequestParam Long sedeId, 
+            @RequestParam Long servicioId) {
+        return ResponseEntity.ok(medicoService.filtrarParaCita(sedeId, servicioId));
+    }
 
+    // RUTAS PRIVADAS (Solo para el Administrador)
+        /* 
+      Devuelve absolutamente todos los médicos registrados.
+     */
+    @GetMapping
+    public ResponseEntity<List<MedicoDTOResponse>> listarTodos() {
         return ResponseEntity.ok(medicoService.obtenerTodos());
     }
 
+    /*
+    Registra un nuevo médico (requiere enviar usuarioId, sedeId y servicioId en el JSON).
+     */
     @PostMapping
-    public ResponseEntity<?> crearMedico(
-            @Valid @RequestBody MedicoDTORequest request) {
-
-        try {
-
-            MedicoDTOResponse nuevoMedico =
-                    medicoService.crearMedico(request);
-
-            return new ResponseEntity<>(
-                    nuevoMedico,
-                    HttpStatus.CREATED);
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    public ResponseEntity<MedicoDTOResponse> crear(@Valid @RequestBody MedicoDTORequest request) {
+        return ResponseEntity.ok(medicoService.crearMedico(request));
     }
 
+    /* 
+      Actualiza los datos de un médico existente.
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarMedico(
-            @PathVariable Long id,
+    public ResponseEntity<MedicoDTOResponse> actualizar(
+            @PathVariable Long id, 
             @Valid @RequestBody MedicoDTORequest request) {
+        return ResponseEntity.ok(medicoService.actualizarMedico(id, request));
+    }
 
-        try {
-
-            MedicoDTOResponse medicoActualizado =
-                    medicoService.actualizarMedico(id, request);
-
-            return ResponseEntity.ok(medicoActualizado);
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    /* 
+     Deshabilita un médico cambiando su estado a false.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deshabilitar(@PathVariable Long id) {
+        medicoService.deshabilitarMedico(id);
+        return ResponseEntity.noContent().build(); // Devuelve un código 204 (Éxito sin contenido)
     }
 }

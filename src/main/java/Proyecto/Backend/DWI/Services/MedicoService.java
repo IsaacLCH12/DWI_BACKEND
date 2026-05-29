@@ -1,130 +1,115 @@
 package Proyecto.Backend.DWI.Services;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import Proyecto.Backend.DWI.Dtos.Request.MedicoDTORequest;
-import Proyecto.Backend.DWI.Dtos.Response.MedicoDTOResponse;
+import jakarta.transaction.Transactional;
 import Proyecto.Backend.DWI.Models.Medico;
 import Proyecto.Backend.DWI.Models.Sede;
+import Proyecto.Backend.DWI.Models.Servicio;
 import Proyecto.Backend.DWI.Models.Usuario;
 import Proyecto.Backend.DWI.Repositories.MedicoRepository;
 import Proyecto.Backend.DWI.Repositories.SedeRepository;
+import Proyecto.Backend.DWI.Repositories.ServicioRepository;
 import Proyecto.Backend.DWI.Repositories.UsuarioRepository;
-import jakarta.transaction.Transactional;
+import Proyecto.Backend.DWI.Dtos.Request.MedicoDTORequest;
+import Proyecto.Backend.DWI.Dtos.Response.MedicoDTOResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MedicoService {
 
     private final MedicoRepository medicoRepository;
-    private final UsuarioRepository usuarioRepository;
     private final SedeRepository sedeRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ServicioRepository servicioRepository; 
 
-    public MedicoService(MedicoRepository medicoRepository,
-                         UsuarioRepository usuarioRepository,
-                         SedeRepository sedeRepository) {
-
+    public MedicoService(MedicoRepository medicoRepository, SedeRepository sedeRepository, 
+                         UsuarioRepository usuarioRepository, ServicioRepository servicioRepository) {
         this.medicoRepository = medicoRepository;
-        this.usuarioRepository = usuarioRepository;
         this.sedeRepository = sedeRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.servicioRepository = servicioRepository;
     }
 
-    // READ: Listar médicos
+    // READ: Todos los médicos (para el panel del Admin)
     public List<MedicoDTOResponse> obtenerTodos() {
-
-        List<Medico> medicosEntity = medicoRepository.findAll();
-
-        return mapearListaMedicos(medicosEntity);
+        return medicoRepository.findAll().stream()
+                .map(this::convertirAResponse)
+                .collect(Collectors.toList());
     }
 
-    // CREATE: Registrar médico
+    // READ: Filtrar médicos disponibles (para el paciente cuando hace su cita)
+    public List<MedicoDTOResponse> filtrarParaCita(Long sedeId, Long servicioId) {
+        return medicoRepository.filtrarParaCita(sedeId, servicioId).stream()
+                .map(this::convertirAResponse)
+                .collect(Collectors.toList());
+    }
+
+    // CREATE
     @Transactional
     public MedicoDTOResponse crearMedico(MedicoDTORequest request) {
-
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
-
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Sede sede = sedeRepository.findById(request.getSedeId())
-                .orElseThrow(() ->
-                        new RuntimeException("Sede no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Sede no encontrada"));
+        Servicio servicio = servicioRepository.findById(request.getServicioId())
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado")); // Buscamos la especialidad
 
-        Medico nuevoMedico = new Medico();
+        Medico medico = new Medico();
+        medico.setUsuarioId(usuario);
+        medico.setNombre(request.getNombre());
+        medico.setApellido(request.getApellido());
+        medico.setFotoUrl(request.getFotoUrl());
+        medico.setSedeId(sede);
+        medico.setServicioId(servicio); // Asignamos la especialidad
+        medico.setEstado(true); // Activo por defecto al crear
 
-        nuevoMedico.setUsuarioId(usuario);
-        nuevoMedico.setNombre(request.getNombre());
-        nuevoMedico.setApellido(request.getApellido());
-        nuevoMedico.setFotoUrl(request.getFotoUrl());
-        nuevoMedico.setSedeId(sede);
-
-        Medico medicoGuardado =
-                medicoRepository.save(nuevoMedico);
-
-        return convertirADTOResponse(medicoGuardado);
+        return convertirAResponse(medicoRepository.save(medico));
     }
 
-    // UPDATE: Actualizar médico
+    // UPDATE
     @Transactional
-    public MedicoDTOResponse actualizarMedico(
-            Long id,
-            MedicoDTORequest request) {
-
-        Medico medicoExistente = medicoRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Médico no encontrado con el ID: " + id));
-
+    public MedicoDTOResponse actualizarMedico(Long id, MedicoDTORequest request) {
+        Medico medico = medicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+        
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
-
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Sede sede = sedeRepository.findById(request.getSedeId())
-                .orElseThrow(() ->
-                        new RuntimeException("Sede no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Sede no encontrada"));
+        Servicio servicio = servicioRepository.findById(request.getServicioId())
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
 
-        medicoExistente.setUsuarioId(usuario);
-        medicoExistente.setNombre(request.getNombre());
-        medicoExistente.setApellido(request.getApellido());
-        medicoExistente.setFotoUrl(request.getFotoUrl());
-        medicoExistente.setSedeId(sede);
+        medico.setUsuarioId(usuario);
+        medico.setNombre(request.getNombre());
+        medico.setApellido(request.getApellido());
+        medico.setFotoUrl(request.getFotoUrl());
+        medico.setSedeId(sede);
+        medico.setServicioId(servicio);
 
-        Medico medicoActualizado =
-                medicoRepository.save(medicoExistente);
-
-        return convertirADTOResponse(medicoActualizado);
+        return convertirAResponse(medicoRepository.save(medico));
     }
 
-    // Métodos auxiliares
-    private List<MedicoDTOResponse> mapearListaMedicos(
-            List<Medico> medicosEntity) {
-
-        List<MedicoDTOResponse> listaResponse =
-                new ArrayList<>();
-
-        for (Medico m : medicosEntity) {
-
-            listaResponse.add(convertirADTOResponse(m));
-        }
-
-        return listaResponse;
+    // DELETE LÓGICO 
+    @Transactional
+    public void deshabilitarMedico(Long id) {
+        Medico medico = medicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+        medico.setEstado(false);
+        medicoRepository.save(medico);
     }
 
-    private MedicoDTOResponse convertirADTOResponse(
-            Medico medico) {
-
-        MedicoDTOResponse response =
-                new MedicoDTOResponse();
-
-        response.setId(medico.getId());
-        response.setNombre(medico.getNombre());
-        response.setApellido(medico.getApellido());
-        response.setFotoUrl(medico.getFotoUrl());
-
-        response.setNombreSede(
-                medico.getSedeId().getNombre());
-
-        return response;
+    // MAPPER
+    private MedicoDTOResponse convertirAResponse(Medico medico) {
+        return new MedicoDTOResponse(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getFotoUrl(),
+                medico.getSedeId().getNombre(),
+                medico.getServicioId().getNombre(), // Extraemos el nombre del servicio
+                medico.isEstado()
+        );
     }
 }

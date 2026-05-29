@@ -20,46 +20,26 @@ public class MedicoDTORequest {
     @NotNull(message = "La sede es obligatoria")
     private Long sedeId;
 
-    public MedicoDTORequest() {
-    }
+    @NotNull(message = "El servicio (especialidad) es obligatorio")
+    private Long servicioId;
 
-    public Long getUsuarioId() {
-        return this.usuarioId;
-    }
+    public MedicoDTORequest() {}
 
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
+    public Long getUsuarioId() { return this.usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 
-    public String getNombre() {
-        return this.nombre;
-    }
+    public String getNombre() { return this.nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getApellido() { return this.apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
 
-    public String getApellido() {
-        return this.apellido;
-    }
+    public String getFotoUrl() { return this.fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
+    public Long getSedeId() { return this.sedeId; }
+    public void setSedeId(Long sedeId) { this.sedeId = sedeId; }
 
-    public String getFotoUrl() {
-        return this.fotoUrl;
-    }
-
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
-    }
-
-    public Long getSedeId() {
-        return this.sedeId;
-    }
-
-    public void setSedeId(Long sedeId) {
-        this.sedeId = sedeId;
-    }
+    public Long getServicioId() { return this.servicioId; }
+    public void setServicioId(Long servicioId) { this.servicioId = servicioId; }
 }

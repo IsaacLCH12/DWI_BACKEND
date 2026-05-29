@@ -17,6 +17,6 @@ public interface PagoRepository extends JpaRepository<Pago,Long>{
         List<Pago> buscarPorEstado(@Param("estado") String estado);
 
         /*jpql para buscar el pago asociado a una cita medica en especifico */
-        @Query("SELECT p FROM Pago p WHERE p.citaId =: citaId")
+        @Query("SELECT p FROM Pago p WHERE p.citaId.id = :citaId")
         Optional<Pago> buscarPorCitaId(@Param("citaId") Long citaId);
     }

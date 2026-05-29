@@ -36,65 +36,50 @@ public class Medico {
     @JoinColumn(name = "sedeId", nullable = false)
     private Sede sedeId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "servicioId", nullable = false)
+    private Servicio servicioId;
+
+    @Column(nullable = false)
+    private boolean estado;
+
     public Medico() {
     }
 
     public Medico(Long id, Usuario usuarioId, String nombre, String apellido,
-                  String fotoUrl, Sede sedeId) {
-
+                  String fotoUrl, Sede sedeId, Servicio servicioId, boolean estado) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.nombre = nombre;
         this.apellido = apellido;
         this.fotoUrl = fotoUrl;
         this.sedeId = sedeId;
+        this.servicioId = servicioId;
+        this.estado = estado;
     }
 
-    public Long getId() {
-        return this.id;
-    }
+    // --- GETTERS Y SETTERS ---
+    public Long getId() { return this.id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Usuario getUsuarioId() { return this.usuarioId; }
+    public void setUsuarioId(Usuario usuarioId) { this.usuarioId = usuarioId; }
+    
+    public String getNombre() { return this.nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    public String getApellido() { return this.apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    
+    public String getFotoUrl() { return this.fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
+    
+    public Sede getSedeId() { return this.sedeId; }
+    public void setSedeId(Sede sedeId) { this.sedeId = sedeId; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Servicio getServicioId() { return this.servicioId; }
+    public void setServicioId(Servicio servicioId) { this.servicioId = servicioId; }
 
-    public Usuario getUsuarioId() {
-        return this.usuarioId;
-    }
-
-    public void setUsuarioId(Usuario usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public String getNombre() {
-        return this.nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return this.apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getFotoUrl() {
-        return this.fotoUrl;
-    }
-
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
-    }
-
-    public Sede getSedeId() {
-        return this.sedeId;
-    }
-
-    public void setSedeId(Sede sedeId) {
-        this.sedeId = sedeId;
-    }
+    public boolean isEstado() { return this.estado; }
+    public void setEstado(boolean estado) { this.estado = estado; }
 }

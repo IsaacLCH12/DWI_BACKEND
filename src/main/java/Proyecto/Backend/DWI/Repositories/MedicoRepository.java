@@ -10,7 +10,10 @@ import Proyecto.Backend.DWI.Models.Medico;
 
 public interface MedicoRepository extends JpaRepository<Medico,Long> {
     
-    /*jpql para buscar medico por sede */
-    @Query("SELECT m FROM Medico m WHERE m.sedeId.id = :sedeId")
-    List<Medico> buscarPorSedeId(@Param("sedeId") Long sedeId);
+    /*jpql cuando el paciente elige sede y servicio*/
+   @Query("SELECT m FROM Medico m WHERE m.sedeId.id = :sedeId AND m.servicioId.id = :servicioId AND m.estado = true")
+    List<Medico> filtrarParaCita(
+            @Param("sedeId") Long sedeId, 
+            @Param("servicioId") Long servicioId
+    );
 }

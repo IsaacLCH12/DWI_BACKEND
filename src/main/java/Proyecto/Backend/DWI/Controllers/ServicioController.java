@@ -1,9 +1,8 @@
 package Proyecto.Backend.DWI.Controllers;
 
 import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,50 +26,31 @@ public class ServicioController {
         this.servicioService = servicioService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ServicioDTOResponse>> listarServicios() {
+    // --- PÚBLICO: Para que el Front-End llene sus selects ---
+    @GetMapping("/activos")
+    public ResponseEntity<List<ServicioDTOResponse>> listarActivos() {
+        return ResponseEntity.ok(servicioService.obtenerActivos());
+    }
 
+    // --- PRIVADOS: Solo Administradores ---
+    @GetMapping
+    public ResponseEntity<List<ServicioDTOResponse>> listarTodos() {
         return ResponseEntity.ok(servicioService.obtenerTodos());
     }
 
     @PostMapping
-    public ResponseEntity<?> crearServicio(
-            @Valid @RequestBody ServicioDTORequest request) {
-
-        try {
-
-            ServicioDTOResponse nuevoServicio =
-                    servicioService.crearServicio(request);
-
-            return new ResponseEntity<>(
-                    nuevoServicio,
-                    HttpStatus.CREATED);
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    public ResponseEntity<ServicioDTOResponse> crear(@Valid @RequestBody ServicioDTORequest request) {
+        return ResponseEntity.ok(servicioService.guardar(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarServicio(
-            @PathVariable Long id,
-            @Valid @RequestBody ServicioDTORequest request) {
+    public ResponseEntity<ServicioDTOResponse> actualizar(@PathVariable Long id, @Valid @RequestBody ServicioDTORequest request) {
+        return ResponseEntity.ok(servicioService.actualizar(id, request));
+    }
 
-        try {
-
-            ServicioDTOResponse servicioActualizado =
-                    servicioService.actualizarServicio(id, request);
-
-            return ResponseEntity.ok(servicioActualizado);
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deshabilitar(@PathVariable Long id) {
+        servicioService.deshabilitar(id);
+        return ResponseEntity.noContent().build(); // 204 No Content es lo ideal para Delete
     }
 }
