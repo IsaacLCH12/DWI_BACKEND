@@ -5,13 +5,11 @@ import java.util.List;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import Proyecto.Backend.DWI.Models.Usuario;
 
 public class UserDetailsImpl implements UserDetails {
     
     private final Usuario usuario;
-
 
     public UserDetailsImpl(Usuario usuario) {
         this.usuario = usuario;
@@ -19,8 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override   
     public Collection<? extends GrantedAuthority> getAuthorities(){
-        /*aca decimos q rol tiene este usuario */
-        return List.of(new SimpleGrantedAuthority("ROLE_"+ usuario.getRol()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
     }
 
     @Override
@@ -30,7 +27,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername(){
-        return usuario.getDni();
+        // Lógica dinámica: si el usuario tiene correo usa el correo, de lo contrario usa el DNI
+        return usuario.getCorreo() != null ? usuario.getCorreo() : usuario.getDni();
     }
 
     public Usuario getUsuario(){
@@ -38,22 +36,14 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired(){
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked(){
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired(){
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled(){
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }

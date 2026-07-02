@@ -4,18 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 
 public class IniciarSesionDTORequest {
     
-    @NotBlank(message = "El DNI es obligatorio")
-    private String dni;
+    // Cambiamos el nombre a "identificador" para que acepte DNI o Correo
+    @NotBlank(message = "El DNI o Correo es obligatorio")
+    private String identificador;
 
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
-    public String getDni() {
-        return this.dni;
+    public String getIdentificador() {
+        return this.identificador;
     }
 
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setIdentificador(String identificador) {
+        this.identificador = identificador;
     }
 
     public String getPassword() {

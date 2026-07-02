@@ -25,7 +25,6 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-
     public AuthService(UsuarioRepository usuarioRepository, PacienteRepository pacienteRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.usuarioRepository = usuarioRepository;
         this.pacienteRepository = pacienteRepository;
@@ -34,24 +33,25 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    /*REGISTRO TRANSACCIONAL: crear usuario y luego paciente */
+    /* REGISTRO TRANSACCIONAL: crear usuario y luego paciente */
     @Transactional
     public AuthDTOResponse registrarPaciente(RegistrarDTORequest request){
 
-        /*1. Validar duplicados */
+        /* 1. Validar duplicados */
         if (usuarioRepository.existsByDni(request.getDni())) {
             throw new RuntimeException("Error: El DNI ya esta registrado en el sistema.");
         }
 
-        /*2. Crear la cuenta de seguridad */
+        /* 2. Crear la cuenta de seguridad */
         Usuario nuevUsuario = new Usuario();
         nuevUsuario.setDni(request.getDni());
-        /*encriptamos la contra */
+        
+        /* Encriptamos la contra */
         nuevUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
         nuevUsuario.setRol("PACIENTE");
         Usuario usuarioGuardado = usuarioRepository.save(nuevUsuario);
 
-        /*3. Crear el Perfil del paciente vinculado al usuario */
+        /* 3. Crear el Perfil del paciente vinculado al usuario */
         Paciente nuevoPaciente = new Paciente();
         nuevoPaciente.setUsuarioId(usuarioGuardado);
         nuevoPaciente.setNombre(request.getNombre());
@@ -59,25 +59,35 @@ public class AuthService {
         nuevoPaciente.setCorreo(request.getCorreo());
         nuevoPaciente.setTelefono(request.getTelefono());
 
-        /*4. Guardar paciente */
+        /* 4. Guardar paciente */
         pacienteRepository.save(nuevoPaciente);
 
-        /*generamos token */
+        /* Generamos token */
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuarioGuardado));
-return new AuthDTOResponse(jwtToken, usuarioGuardado.getRol(), usuarioGuardado.getId());    }
+        return new AuthDTOResponse(jwtToken, usuarioGuardado.getRol(), usuarioGuardado.getId());    
+    }
     
-    /*INICIAR SESION */
+    /* INICIAR SESION DINÁMICO (Soporta DNI o Correo) */
     public AuthDTOResponse iniciarSesion(IniciarSesionDTORequest request){
 
-        /*verificacion si la contraseña encriptada coincide */
+        /* Verificacion si la contraseña encriptada coincide usando el Identificador */
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getDni(), request.getPassword())
+            new UsernamePasswordAuthenticationToken(request.getIdentificador(), request.getPassword())
         );
 
-        /*si las credenciales de la linea anterior son correctas: */
-        Usuario usuario = usuarioRepository.findByDni(request.getDni())
-        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        /* Si las credenciales de la linea anterior son correctas, buscamos al usuario: */
+        Usuario usuario;
+        
+        /* 💡 LÓGICA SMART LOGIN: Verificamos si es administrador (correo) o paciente (DNI) */
+        if (request.getIdentificador().contains("@")) {
+            usuario = usuarioRepository.findByCorreo(request.getIdentificador())
+            .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
+        } else {
+            usuario = usuarioRepository.findByDni(request.getIdentificador())
+            .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        }
 
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuario));
-return new AuthDTOResponse(jwtToken, usuario.getRol(), usuario.getId());    }
+        return new AuthDTOResponse(jwtToken, usuario.getRol(), usuario.getId());    
+    }
 }
