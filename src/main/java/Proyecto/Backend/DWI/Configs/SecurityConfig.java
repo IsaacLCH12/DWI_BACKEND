@@ -29,28 +29,34 @@ public class SecurityConfig {
         this.detailsServiceImpl = detailsServiceImpl;
     }
 
-  @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                         /* 1. RUTAS 100% PÚBLICAS (No piden token) */
-                        .requestMatchers("/api/auth/**").permitAll()
-                        
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
+                        .permitAll()
                         /* 2. CATÁLOGOS DE LECTURA PÚBLICA (El paciente ve esto para armar su cita) */
-                        .requestMatchers(HttpMethod.GET, 
-                                "/api/sedes/activas", 
-                                "/api/servicios/activos", 
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/sedes/activas",
+                                "/api/servicios/activos",
                                 "/api/medicos/filtrar",
-                                "/api/horarios/medico/**").permitAll()
-                        
-                        /* 3. LECTURAS PRIVADAS*/
+                                "/api/horarios/medico/**")
+                        .permitAll()
+
+                        /* 3. LECTURAS PRIVADAS */
                         .requestMatchers(HttpMethod.GET, "/api/pacientes", "/api/pagos").hasRole("ADMIN")
-                        
-                        /* 4. CRUD ADMINISTRATIVO  */
-                        .requestMatchers("/api/sedes/**", "/api/servicios/**", "/api/medicos/**", "/api/horarios/**").hasRole("ADMIN")
-                        
+
+                        /* 4. CRUD ADMINISTRATIVO */
+                        .requestMatchers("/api/sedes/**", "/api/servicios/**", "/api/medicos/**", "/api/horarios/**")
+                        .hasRole("ADMIN")
+
                         /* 5. TODO LO DEMÁS REQUIERE ESTAR LOGUEADO (Ej: Pagar, Ver Perfil) */
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -62,7 +68,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(detailsServiceImpl);
-        provider.setPasswordEncoder(passwordEncoder()); 
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
@@ -72,7 +78,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
