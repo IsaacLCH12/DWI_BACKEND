@@ -1,12 +1,12 @@
-# 1. Etapa de Construcción (Usa Maven para compilar tu proyecto)
-FROM maven:3.8.5-openjdk-17 AS build
+# 1. Etapa de Construcción (Usamos Maven con Eclipse Temurin para Java 25)
+FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 2. Etapa de Ejecución (Prepara el servidor para correr)
-FROM openjdk:17-jdk-slim
+# 2. Etapa de Ejecución (Usamos una versión ligera de Java 25 para correr la app)
+FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
