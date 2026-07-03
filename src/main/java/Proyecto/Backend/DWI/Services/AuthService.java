@@ -4,7 +4,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import Proyecto.Backend.DWI.Dtos.Request.IniciarSesionDTORequest;
 import Proyecto.Backend.DWI.Dtos.Request.RegistrarDTORequest;
 import Proyecto.Backend.DWI.Dtos.Response.AuthDTOResponse;
@@ -18,7 +17,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class AuthService {
-    
+
     private final UsuarioRepository usuarioRepository;
     private final PacienteRepository pacienteRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,25 +32,18 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    /* REGISTRO TRANSACCIONAL: crear usuario y luego paciente */
     @Transactional
     public AuthDTOResponse registrarPaciente(RegistrarDTORequest request){
-
-        /* 1. Validar duplicados */
         if (usuarioRepository.existsByDni(request.getDni())) {
-            throw new RuntimeException("Error: El DNI ya esta registrado en el sistema.");
+            throw new RuntimeException("Error: El DNI ya está registrado.");
         }
 
-        /* 2. Crear la cuenta de seguridad */
         Usuario nuevUsuario = new Usuario();
         nuevUsuario.setDni(request.getDni());
-        
-        /* Encriptamos la contra */
         nuevUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
         nuevUsuario.setRol("PACIENTE");
         Usuario usuarioGuardado = usuarioRepository.save(nuevUsuario);
 
-        /* 3. Crear el Perfil del paciente vinculado al usuario */
         Paciente nuevoPaciente = new Paciente();
         nuevoPaciente.setUsuarioId(usuarioGuardado);
         nuevoPaciente.setNombre(request.getNombre());
@@ -59,33 +51,20 @@ public class AuthService {
         nuevoPaciente.setCorreo(request.getCorreo());
         nuevoPaciente.setTelefono(request.getTelefono());
 
-        /* 4. Guardar paciente */
         pacienteRepository.save(nuevoPaciente);
 
-        /* Generamos token */
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuarioGuardado));
         return new AuthDTOResponse(jwtToken, usuarioGuardado.getRol(), usuarioGuardado.getId());    
     }
-    
-    /* INICIAR SESION DINÁMICO (Soporta DNI o Correo) */
-    public AuthDTOResponse iniciarSesion(IniciarSesionDTORequest request){
 
-        /* Verificacion si la contraseña encriptada coincide usando el Identificador */
+    public AuthDTOResponse iniciarSesion(IniciarSesionDTORequest request){
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getIdentificador(), request.getPassword())
         );
 
-        /* Si las credenciales de la linea anterior son correctas, buscamos al usuario: */
-        Usuario usuario;
-        
-        /* 💡 LÓGICA SMART LOGIN: Verificamos si es administrador (correo) o paciente (DNI) */
-        if (request.getIdentificador().contains("@")) {
-            usuario = usuarioRepository.findByCorreo(request.getIdentificador())
-            .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
-        } else {
-            usuario = usuarioRepository.findByDni(request.getIdentificador())
-            .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-        }
+        Usuario usuario = request.getIdentificador().contains("@") 
+            ? usuarioRepository.findByCorreo(request.getIdentificador()).orElseThrow(() -> new RuntimeException("Admin no encontrado"))
+            : usuarioRepository.findByDni(request.getIdentificador()).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         String jwtToken = jwtService.generateToken(new UserDetailsImpl(usuario));
         return new AuthDTOResponse(jwtToken, usuario.getRol(), usuario.getId());    
