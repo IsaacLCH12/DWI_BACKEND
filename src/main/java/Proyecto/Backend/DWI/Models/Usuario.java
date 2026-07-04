@@ -1,11 +1,6 @@
 package Proyecto.Backend.DWI.Models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "usuarios")
@@ -15,11 +10,10 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Cambiado a nullable = true porque el administrador no usará DNI
-    @Column(nullable = true, length = 8, unique = true)
+    // Aunque pongamos nullable = true, si la DB ya tiene NOT NULL, el error persistirá
+    @Column(nullable = true, length = 8) 
     private String dni;
 
-    // Nueva columna para el inicio de sesión administrativo o médico
     @Column(nullable = true, unique = true)
     private String correo;
 
@@ -29,54 +23,24 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private String rol;
 
-    public Usuario() {
-    }
+    public Usuario() {}
 
-    public Usuario(Long id, String dni, String correo, String password, String rol) {
-        this.id = id;
+    public Usuario(String dni, String correo, String password, String rol) {
         this.dni = dni;
         this.correo = correo;
         this.password = password;
         this.rol = rol;
     }
 
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDni() {
-        return this.dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
-    public String getCorreo() {
-        return this.correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRol() {
-        return this.rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
+    // Getters y Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getDni() { return dni; }
+    public void setDni(String dni) { this.dni = dni; }
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 }

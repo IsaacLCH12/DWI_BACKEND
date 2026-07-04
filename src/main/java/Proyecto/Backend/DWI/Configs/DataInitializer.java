@@ -21,11 +21,16 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         String correoAdmin = "admin@clinicaromero.com";
 
-        // Comprobamos si ya existe el registro para evitar inserciones duplicadas al reiniciar
+        // Comprobamos si ya existe el registro por correo
         if (!usuarioRepository.existsByCorreo(correoAdmin)) {
             
             Usuario admin = new Usuario();
             admin.setCorreo(correoAdmin);
+            
+            // 💡 EL ARREGLO ESTÁ AQUÍ: Le damos un DNI de 8 ceros al Admin 
+            // Así PostgreSQL no se queja del valor nulo y te deja compilar.
+            admin.setDni("00000000");
+            
             admin.setPassword(passwordEncoder.encode("AdminClinica2026!"));
             admin.setRol("ADMIN"); 
             
@@ -36,6 +41,8 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("📧 Identificador: " + correoAdmin);
             System.out.println("🔒 Credencial: AdminClinica2026!");
             System.out.println("=================================================");
+        } else {
+            System.out.println("ℹ️ El administrador ya estaba creado.");
         }
     }
 }
