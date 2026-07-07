@@ -40,6 +40,7 @@ public class AuthService {
 
         Usuario nuevUsuario = new Usuario();
         nuevUsuario.setDni(request.getDni());
+        nuevUsuario.setCorreo(request.getCorreo()); // Ahora guarda el correo en Usuario también
         nuevUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
         nuevUsuario.setRol("PACIENTE");
         Usuario usuarioGuardado = usuarioRepository.save(nuevUsuario);

@@ -5,8 +5,12 @@ import jakarta.validation.constraints.NotNull;
 
 public class MedicoDTORequest {
 
-    // El usuario es opcional, puede crearse un médico sin cuenta.
+    // El usuario es opcional si se envía dni, correo y password
     private Long usuarioId;
+
+    private String dni;
+    private String correo;
+    private String password;
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
@@ -42,4 +46,13 @@ public class MedicoDTORequest {
 
     public Long getServicioId() { return this.servicioId; }
     public void setServicioId(Long servicioId) { this.servicioId = servicioId; }
+
+    public String getDni() { return this.dni; }
+    public void setDni(String dni) { this.dni = dni; }
+
+    public String getCorreo() { return this.correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
+
+    public String getPassword() { return this.password; }
+    public void setPassword(String password) { this.password = password; }
 }

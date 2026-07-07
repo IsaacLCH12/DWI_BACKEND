@@ -12,6 +12,7 @@ import Proyecto.Backend.DWI.Repositories.ServicioRepository;
 import Proyecto.Backend.DWI.Repositories.UsuarioRepository;
 import Proyecto.Backend.DWI.Dtos.Request.MedicoDTORequest;
 import Proyecto.Backend.DWI.Dtos.Response.MedicoDTOResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,13 +24,16 @@ public class MedicoService {
     private final SedeRepository sedeRepository;
     private final UsuarioRepository usuarioRepository;
     private final ServicioRepository servicioRepository; 
+    private final PasswordEncoder passwordEncoder;
 
     public MedicoService(MedicoRepository medicoRepository, SedeRepository sedeRepository, 
-                         UsuarioRepository usuarioRepository, ServicioRepository servicioRepository) {
+                         UsuarioRepository usuarioRepository, ServicioRepository servicioRepository,
+                         PasswordEncoder passwordEncoder) {
         this.medicoRepository = medicoRepository;
         this.sedeRepository = sedeRepository;
         this.usuarioRepository = usuarioRepository;
         this.servicioRepository = servicioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // READ: Todos los médicos (para el panel del Admin)
@@ -53,6 +57,16 @@ public class MedicoService {
         if (request.getUsuarioId() != null) {
             usuario = usuarioRepository.findById(request.getUsuarioId())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        } else if (request.getDni() != null && request.getCorreo() != null && request.getPassword() != null) {
+            // Crear el usuario si no existe
+            usuario = new Usuario();
+            usuario.setDni(request.getDni());
+            usuario.setCorreo(request.getCorreo());
+            usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+            usuario.setRol("MEDICO");
+            usuario = usuarioRepository.save(usuario);
+        } else {
+            throw new RuntimeException("Debe proporcionar un usuarioId o los datos para crear un nuevo usuario (DNI, correo, contraseña)");
         }
         
         Sede sede = sedeRepository.findById(request.getSedeId())
