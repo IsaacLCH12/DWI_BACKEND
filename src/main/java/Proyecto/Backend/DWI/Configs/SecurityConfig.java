@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .permitAll()
 
                         /* 3. LECTURAS PRIVADAS */
-                        .requestMatchers(HttpMethod.GET, "/api/pacientes", "/api/pagos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/pacientes", "/api/pagos").hasAnyRole("ADMIN", "PACIENTE")
 
                         /* 4. CRUD ADMINISTRATIVO */
                         .requestMatchers("/api/sedes/**", "/api/servicios/**", "/api/medicos/**", "/api/horarios/**")

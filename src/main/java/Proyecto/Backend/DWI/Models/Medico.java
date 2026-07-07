@@ -20,7 +20,7 @@ public class Medico {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuarioId", nullable = false)
+    @JoinColumn(name = "usuarioId", nullable = true)
     private Usuario usuarioId;
 
     @Column(nullable = false)

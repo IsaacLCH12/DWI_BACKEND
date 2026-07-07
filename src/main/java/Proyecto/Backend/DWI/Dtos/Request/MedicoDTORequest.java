@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class MedicoDTORequest {
 
-    @NotNull(message = "El usuario es obligatorio")
+    // El usuario es opcional, puede crearse un médico sin cuenta.
     private Long usuarioId;
 
     @NotBlank(message = "El nombre es obligatorio")

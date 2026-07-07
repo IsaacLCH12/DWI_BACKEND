@@ -49,8 +49,12 @@ public class MedicoService {
     // CREATE
     @Transactional
     public MedicoDTOResponse crearMedico(MedicoDTORequest request) {
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = null;
+        if (request.getUsuarioId() != null) {
+            usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        }
+        
         Sede sede = sedeRepository.findById(request.getSedeId())
                 .orElseThrow(() -> new RuntimeException("Sede no encontrada"));
         Servicio servicio = servicioRepository.findById(request.getServicioId())
@@ -74,8 +78,12 @@ public class MedicoService {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
         
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = null;
+        if (request.getUsuarioId() != null) {
+            usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        }
+        
         Sede sede = sedeRepository.findById(request.getSedeId())
                 .orElseThrow(() -> new RuntimeException("Sede no encontrada"));
         Servicio servicio = servicioRepository.findById(request.getServicioId())
