@@ -58,11 +58,11 @@ public class MedicoController {
     }
 
     /* 
-     Deshabilita un médico cambiando su estado a false.
+     Alterna el estado de un médico (Activo/Inactivo).
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deshabilitar(@PathVariable Long id) {
-        medicoService.deshabilitarMedico(id);
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id) {
+        medicoService.cambiarEstadoMedico(id);
         return ResponseEntity.noContent().build(); // Devuelve un código 204 (Éxito sin contenido)
     }
 }

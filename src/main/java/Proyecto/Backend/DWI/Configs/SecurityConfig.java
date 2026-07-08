@@ -95,8 +95,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // Aquí pones las URLs que tienen permiso de entrar
         configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://tu-frontend.vercel.app")); 
-        // Permitir todos los métodos (incluyendo OPTIONS, que es el que te está fallando)
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Permitir todos los métodos (incluyendo OPTIONS y PATCH)
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

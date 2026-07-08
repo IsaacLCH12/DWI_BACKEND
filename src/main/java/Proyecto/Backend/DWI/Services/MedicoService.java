@@ -92,10 +92,10 @@ public class MedicoService {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
         
-        Usuario usuario = null;
         if (request.getUsuarioId() != null) {
-            usuario = usuarioRepository.findById(request.getUsuarioId())
+            Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            medico.setUsuarioId(usuario);
         }
         
         Sede sede = sedeRepository.findById(request.getSedeId())
@@ -103,7 +103,6 @@ public class MedicoService {
         Servicio servicio = servicioRepository.findById(request.getServicioId())
                 .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
 
-        medico.setUsuarioId(usuario);
         medico.setNombre(request.getNombre());
         medico.setApellido(request.getApellido());
         medico.setFotoUrl(request.getFotoUrl());
@@ -113,12 +112,12 @@ public class MedicoService {
         return convertirAResponse(medicoRepository.save(medico));
     }
 
-    // DELETE LÓGICO 
+    // CAMBIAR ESTADO (Alternar entre Activo e Inactivo)
     @Transactional
-    public void deshabilitarMedico(Long id) {
+    public void cambiarEstadoMedico(Long id) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
-        medico.setEstado(false);
+        medico.setEstado(!medico.isEstado());
         medicoRepository.save(medico);
     }
 
