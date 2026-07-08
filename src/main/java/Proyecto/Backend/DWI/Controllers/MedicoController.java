@@ -30,6 +30,14 @@ public class MedicoController {
         return ResponseEntity.ok(medicoService.filtrarParaCita(sedeId, servicioId));
     }
 
+    /*
+     Devuelve absolutamente todos los médicos activos (público)
+     */
+    @GetMapping("/activos")
+    public ResponseEntity<List<MedicoDTOResponse>> listarActivos() {
+        return ResponseEntity.ok(medicoService.obtenerActivos());
+    }
+
     // RUTAS PRIVADAS (Solo para el Administrador)
         /* 
       Devuelve absolutamente todos los médicos registrados.

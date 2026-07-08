@@ -43,6 +43,14 @@ public class MedicoService {
                 .collect(Collectors.toList());
     }
 
+    // READ: Médicos activos (para el panel del Paciente)
+    public List<MedicoDTOResponse> obtenerActivos() {
+        return medicoRepository.findAll().stream()
+                .filter(Medico::isEstado)
+                .map(this::convertirAResponse)
+                .collect(Collectors.toList());
+    }
+
     // READ: Filtrar médicos disponibles (para el paciente cuando hace su cita)
     public List<MedicoDTOResponse> filtrarParaCita(Long sedeId, Long servicioId) {
         return medicoRepository.filtrarParaCita(sedeId, servicioId).stream()
