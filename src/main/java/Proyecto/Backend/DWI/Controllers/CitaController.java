@@ -66,6 +66,16 @@ public class CitaController {
         }
     
 }
+@PutMapping("/{id}/estado")
+public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody String nuevoEstado) {
+    try {
+        // Limpiamos comillas si vienen del JSON
+        String estadoLimpio = nuevoEstado.replace("\"", "");
+        return ResponseEntity.ok(citaService.cambiarEstadoCita(id, estadoLimpio));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
 
 @PutMapping("/{id}")
     public ResponseEntity<?> actualizarCita(@PathVariable Long id, @Valid @RequestBody CitaDTORequest request) {

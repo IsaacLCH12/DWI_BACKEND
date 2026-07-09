@@ -75,6 +75,14 @@ public class CitaService {
         return convertirADTOResponse(citaGuardada);
     }
 
+
+    @Transactional
+public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
+    Cita cita = citaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+    cita.setEstado(nuevoEstado);
+    return convertirADTOResponse(citaRepository.save(cita));
+}
     // READ: Listar solo las citas del Paciente logueado
     public List<CitaDTOResponse> obtenerMisCitas() {
         // 💡 Usamos el nuevo método para listar usando el correo
