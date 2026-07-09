@@ -8,24 +8,25 @@ public class PacienteDTOResponse {
     private String apellido;
     private String correo;
     private String telefono;
+    private String dni;
 
     // --- CONSTRUCTOR VACÍO ---
     public PacienteDTOResponse() {
     }
 
-    // --- CONSTRUCTOR LLENO ---
-    public PacienteDTOResponse(Long id, Long usuarioId, String nombre, String apellido, String correo, String telefono) {
+
+    public PacienteDTOResponse(Long id, Long usuarioId, String nombre, String apellido, String correo, String telefono, String dni) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
         this.telefono = telefono;
+        this.dni = dni;
     }
 
-    // --- GETTERS Y SETTERS ---
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
@@ -33,7 +34,7 @@ public class PacienteDTOResponse {
     }
 
     public Long getUsuarioId() {
-        return usuarioId;
+        return this.usuarioId;
     }
 
     public void setUsuarioId(Long usuarioId) {
@@ -41,7 +42,7 @@ public class PacienteDTOResponse {
     }
 
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
 
     public void setNombre(String nombre) {
@@ -49,7 +50,7 @@ public class PacienteDTOResponse {
     }
 
     public String getApellido() {
-        return apellido;
+        return this.apellido;
     }
 
     public void setApellido(String apellido) {
@@ -57,7 +58,7 @@ public class PacienteDTOResponse {
     }
 
     public String getCorreo() {
-        return correo;
+        return this.correo;
     }
 
     public void setCorreo(String correo) {
@@ -65,10 +66,19 @@ public class PacienteDTOResponse {
     }
 
     public String getTelefono() {
-        return telefono;
+        return this.telefono;
     }
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
+    public String getDni() {
+        return this.dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+    
 }

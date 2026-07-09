@@ -68,15 +68,21 @@ public class PacienteService {
     }
 
  
-    private PacienteDTOResponse convertirAResponse(Paciente paciente) {
-        return new PacienteDTOResponse(
-                paciente.getId(),
-                paciente.getUsuarioId().getId(),
-                paciente.getNombre(),
-                paciente.getApellido(),
-                paciente.getCorreo(),
-                paciente.getTelefono()
-        );
+   private PacienteDTOResponse convertirAResponse(Paciente paciente) {
+    PacienteDTOResponse response = new PacienteDTOResponse();
+    response.setId(paciente.getId());
+    response.setNombre(paciente.getNombre());
+    response.setApellido(paciente.getApellido());
+    response.setCorreo(paciente.getCorreo());
+    response.setTelefono(paciente.getTelefono());
+    response.setUsuarioId(paciente.getUsuarioId().getId());
+    
+    // 💡 ¡ESTA ES LA LÍNEA QUE FALTA! Saca el DNI de la relación
+    if (paciente.getUsuarioId() != null) {
+        response.setDni(paciente.getUsuarioId().getDni());
     }
+
+    return response;
+}
 }
 
