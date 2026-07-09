@@ -43,11 +43,10 @@ public class CitaService {
     // CREATE: Registrar cita usando el token
     @Transactional
     public CitaDTOResponse crearCita(CitaDTORequest request) {
-        String dniLogueado = obtenerDniDelToken();
+        String correoLogueado = obtenerDniDelToken();
 
-        Paciente pacienteActual = pacienteRepository.buscarPorUsuarioDni(dniLogueado)
+       Paciente pacienteActual = pacienteRepository.buscarPorUsuarioCorreo(correoLogueado)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado en el sistema"));
-    
         Medico medico = medicoRepository.findById(request.getMedicoId())
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
 
