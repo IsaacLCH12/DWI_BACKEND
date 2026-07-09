@@ -19,6 +19,8 @@ public interface CitaRepository extends JpaRepository<Cita,Long> {
     @Query("SELECT c FROM Cita c WHERE c.pacienteId.id= :pacienteId")
     List<Cita> buscarPorPacienteId(@Param("pacienteId") Long pacienteId);
 
-    @Query("SELECT c FROM Cita c WHERE c.pacienteId.usuarioId.dni = :dni")
+   @Query("SELECT c FROM Cita c WHERE c.pacienteId.usuarioId.dni = :dni")
     List<Cita> buscarPorPacienteUsuarioDni(@Param("dni") String dni);
-}
+
+    @Query("SELECT c FROM Cita c WHERE c.pacienteId.usuarioId.correo = :correo")
+    List<Cita> buscarPorPacienteUsuarioCorreo(@Param("correo") String correo);}

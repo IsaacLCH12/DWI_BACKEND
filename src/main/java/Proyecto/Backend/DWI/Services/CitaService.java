@@ -43,10 +43,13 @@ public class CitaService {
     // CREATE: Registrar cita usando el token
     @Transactional
     public CitaDTOResponse crearCita(CitaDTORequest request) {
-        String correoLogueado = obtenerDniDelToken();
+        // 💡 1. Obtenemos el correo real desde el Token
+        String correoLogueado = obtenerCorreoDelToken();
 
-       Paciente pacienteActual = pacienteRepository.buscarPorUsuarioCorreo(correoLogueado)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado en el sistema"));
+        // 💡 2. Buscamos al paciente usando el CORREO, no el DNI
+        Paciente pacienteActual = pacienteRepository.buscarPorUsuarioCorreo(correoLogueado)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado en el sistema. Actualiza tu perfil primero."));
+    
         Medico medico = medicoRepository.findById(request.getMedicoId())
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
 
@@ -74,8 +77,9 @@ public class CitaService {
 
     // READ: Listar solo las citas del Paciente logueado
     public List<CitaDTOResponse> obtenerMisCitas() {
-        String dniLogueado = obtenerDniDelToken();
-        List<Cita> citasEntity = citaRepository.buscarPorPacienteUsuarioDni(dniLogueado);
+        // 💡 Usamos el nuevo método para listar usando el correo
+        String correoLogueado = obtenerCorreoDelToken();
+        List<Cita> citasEntity = citaRepository.buscarPorPacienteUsuarioCorreo(correoLogueado);
         return mapearListaCitas(citasEntity);
     }
 
@@ -83,6 +87,12 @@ public class CitaService {
     public List<CitaDTOResponse> obtenerTodasLasCitas() {
         List<Cita> citasEntity = citaRepository.findAll();
         return mapearListaCitas(citasEntity);
+    }
+
+    // 💡 Renombramos este método auxiliar para que tenga sentido con lo que hace
+    private String obtenerCorreoDelToken() {
+        Object main = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ((UserDetails) main).getUsername();
     }
 
     // UPDATE: Modificar/Reprogramar una Cita
@@ -153,13 +163,7 @@ public class CitaService {
         cita.setEstado("CANCELADA");
         Cita citaActualizada = citaRepository.save(cita);
         return convertirADTOResponse(citaActualizada);
-    }
-
-    // Métodos Auxiliares de conversión y seguridad
-    private String obtenerDniDelToken() {
-        Object main = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ((UserDetails) main).getUsername();
-    }
+    }    
 
     private List<CitaDTOResponse> mapearListaCitas(List<Cita> citasEntity) {
         List<CitaDTOResponse> listaResponse = new ArrayList<>();
