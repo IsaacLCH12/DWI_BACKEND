@@ -23,6 +23,8 @@ public interface PacienteRepository extends JpaRepository<Paciente,Long>{
     @Query("SELECT p FROM Paciente p WHERE p.usuarioId.dni = :dni")
     Optional<Paciente> buscarPorUsuarioDni(@Param("dni") String dni);
 
+
+    @Query("SELECT p FROM Paciente p WHERE p.usuarioId.correo = :correo")
     Optional<Paciente> buscarPorUsuarioCorreo(String correo);
     boolean existsByCorreo(String correo);
     }
