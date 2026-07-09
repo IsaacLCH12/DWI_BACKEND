@@ -66,6 +66,12 @@ public class CitaController {
         }
     
 }
+
+@GetMapping("/historial")
+public ResponseEntity<List<CitaDTOResponse>> listarHistorial() {
+    return ResponseEntity.ok(citaService.obtenerHistorial());
+}
+
 @PutMapping("/{id}/estado")
 public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody String nuevoEstado) {
     try {

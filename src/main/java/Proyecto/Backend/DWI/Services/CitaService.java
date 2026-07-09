@@ -43,10 +43,8 @@ public class CitaService {
     // CREATE: Registrar cita usando el token
     @Transactional
     public CitaDTOResponse crearCita(CitaDTORequest request) {
-        // 💡 1. Obtenemos el correo real desde el Token
         String correoLogueado = obtenerCorreoDelToken();
 
-        // 💡 2. Buscamos al paciente usando el CORREO, no el DNI
         Paciente pacienteActual = pacienteRepository.buscarPorUsuarioCorreo(correoLogueado)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado en el sistema. Actualiza tu perfil primero."));
     
@@ -75,19 +73,25 @@ public class CitaService {
         return convertirADTOResponse(citaGuardada);
     }
 
-
     @Transactional
-public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
-    Cita cita = citaRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-    cita.setEstado(nuevoEstado);
-    return convertirADTOResponse(citaRepository.save(cita));
-}
+    public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
+        Cita cita = citaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        cita.setEstado(nuevoEstado);
+        return convertirADTOResponse(citaRepository.save(cita));
+    }
+
     // READ: Listar solo las citas del Paciente logueado
     public List<CitaDTOResponse> obtenerMisCitas() {
-        // 💡 Usamos el nuevo método para listar usando el correo
         String correoLogueado = obtenerCorreoDelToken();
         List<Cita> citasEntity = citaRepository.buscarPorPacienteUsuarioCorreo(correoLogueado);
+        return mapearListaCitas(citasEntity);
+    }
+
+    // 💡 NUEVO: Listar solo el HISTORIAL (Citas ya atendidas) del paciente logueado
+    public List<CitaDTOResponse> obtenerHistorial() {
+        String correoLogueado = obtenerCorreoDelToken();
+        List<Cita> citasEntity = citaRepository.buscarHistorialPorPacienteCorreo(correoLogueado);
         return mapearListaCitas(citasEntity);
     }
 
@@ -97,7 +101,6 @@ public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
         return mapearListaCitas(citasEntity);
     }
 
-    // 💡 Renombramos este método auxiliar para que tenga sentido con lo que hace
     private String obtenerCorreoDelToken() {
         Object main = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ((UserDetails) main).getUsername();
@@ -107,30 +110,28 @@ public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
     @Transactional
     public CitaDTOResponse actualizarCita(Long id, CitaDTORequest request) {
         
-        // 1. Buscamos la cita que queremos modificar
         Cita citaExistente = citaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada con el ID: " + id));
 
-        // 2. Regla de Negocio: No se puede modificar una cita cancelada
         if (citaExistente.getEstado().equalsIgnoreCase("CANCELADA")) {
             throw new RuntimeException("No puedes modificar una cita que ya fue cancelada.");
         }
 
-        // 3. Seguridad: Si es un paciente, verificamos que la cita le pertenezca
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         
         if (!isAdmin) {
-            String dniLogueado = ((UserDetails) principal).getUsername();
-            String dniDuenioCita = citaExistente.getPacienteId().getUsuarioId().getDni();
+            // 💡 FIX CRÍTICO: Aquí comparabas el correo del token contra el DNI, siempre iba a dar error. 
+            // Ahora comparamos correo contra correo.
+            String correoLogueado = ((UserDetails) principal).getUsername();
+            String correoDuenioCita = citaExistente.getPacienteId().getUsuarioId().getCorreo();
             
-            if (!dniLogueado.equals(dniDuenioCita)) {
+            if (!correoLogueado.equals(correoDuenioCita)) {
                 throw new RuntimeException("Acceso Denegado: No puedes modificar la cita de otro paciente.");
             }
         }
 
-        // 4. Buscamos los nuevos datos (por si cambió de médico, sede o servicio)
         Medico nuevoMedico = medicoRepository.findById(request.getMedicoId())
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
 
@@ -144,15 +145,11 @@ public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
              throw new RuntimeException("La nueva sede seleccionada no se encuentra disponible.");
         }
 
-        // 5. Actualizamos los datos de la cita existente
         citaExistente.setMedico(nuevoMedico);
         citaExistente.setServicioId(nuevoServicio);
         citaExistente.setSede(nuevaSede);
         citaExistente.setFechaHora(request.getFechaHora());
         
-        // (El paciente y el estado se mantienen igual, no se cambian)
-
-        // 6. Guardamos y devolvemos el DTO actualizado
         Cita citaActualizada = citaRepository.save(citaExistente);
         return convertirADTOResponse(citaActualizada);
     }
@@ -163,7 +160,6 @@ public CitaDTOResponse cambiarEstadoCita(Long id, String nuevoEstado) {
         Cita cita = citaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada con el ID: " + id));
         
-        // Regla de negocio: No se puede cancelar una cita que ya fue completada o previamente cancelada
         if (!cita.getEstado().equalsIgnoreCase("PROGRAMADA")) {
             throw new RuntimeException("No se puede modificar una cita con estado: " + cita.getEstado());
         }
