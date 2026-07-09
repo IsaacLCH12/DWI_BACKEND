@@ -40,7 +40,6 @@ public class CitaService {
         this.sedeRepository = sedeRepository;
     }
 
-    // CREATE: Registrar cita usando el token
     @Transactional
     public CitaDTOResponse crearCita(CitaDTORequest request) {
         String correoLogueado = obtenerCorreoDelToken();
@@ -81,21 +80,18 @@ public class CitaService {
         return convertirADTOResponse(citaRepository.save(cita));
     }
 
-    // READ: Listar solo las citas del Paciente logueado
     public List<CitaDTOResponse> obtenerMisCitas() {
         String correoLogueado = obtenerCorreoDelToken();
         List<Cita> citasEntity = citaRepository.buscarPorPacienteUsuarioCorreo(correoLogueado);
         return mapearListaCitas(citasEntity);
     }
 
-    // 💡 NUEVO: Listar solo el HISTORIAL (Citas ya atendidas) del paciente logueado
     public List<CitaDTOResponse> obtenerHistorial() {
         String correoLogueado = obtenerCorreoDelToken();
         List<Cita> citasEntity = citaRepository.buscarHistorialPorPacienteCorreo(correoLogueado);
         return mapearListaCitas(citasEntity);
     }
 
-    // READ: Listar TODAS las citas 
     public List<CitaDTOResponse> obtenerTodasLasCitas() {
         List<Cita> citasEntity = citaRepository.findAll();
         return mapearListaCitas(citasEntity);
@@ -106,7 +102,6 @@ public class CitaService {
         return ((UserDetails) main).getUsername();
     }
 
-    // UPDATE: Modificar/Reprogramar una Cita
     @Transactional
     public CitaDTOResponse actualizarCita(Long id, CitaDTORequest request) {
         
@@ -122,8 +117,6 @@ public class CitaService {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         
         if (!isAdmin) {
-            // 💡 FIX CRÍTICO: Aquí comparabas el correo del token contra el DNI, siempre iba a dar error. 
-            // Ahora comparamos correo contra correo.
             String correoLogueado = ((UserDetails) principal).getUsername();
             String correoDuenioCita = citaExistente.getPacienteId().getUsuarioId().getCorreo();
             
@@ -154,7 +147,6 @@ public class CitaService {
         return convertirADTOResponse(citaActualizada);
     }
 
-    // UPDATE / DELETE: Cancelación de la cita
     @Transactional
     public CitaDTOResponse cancelarCita(Long id) {
         Cita cita = citaRepository.findById(id)
@@ -186,6 +178,12 @@ public class CitaService {
         response.setNombreServicio(cita.getServicioId().getNombre());
         response.setNombreMedico(cita.getMedico().getNombre() + " " + cita.getMedico().getApellido());
         response.setNombreSede(cita.getSede().getNombre());
+        
+        // 💡 NUEVO: Guardamos el precio del servicio para que viaje a Angular
+        if (cita.getServicioId() != null) {
+            response.setPrecioServicio(cita.getServicioId().getPrecio());
+        }
+        
         return response;
     }
 }

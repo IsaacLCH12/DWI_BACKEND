@@ -11,12 +11,14 @@ public class CitaDTOResponse {
     private String nombreServicio;
     private String nombreMedico;
     private String nombreSede;
-
+    
+    // 💡 NUEVO: Variable para enviar el precio dinámico al frontend
+    private Double precioServicio;
 
     public CitaDTOResponse() {
     }
 
-    public CitaDTOResponse(Long id, LocalDateTime fechaHora, String estadoCita, String nombrePaciente, String nombreServicio, String nombreMedico, String nombreSede) {
+    public CitaDTOResponse(Long id, LocalDateTime fechaHora, String estadoCita, String nombrePaciente, String nombreServicio, String nombreMedico, String nombreSede, Double precioServicio) {
         this.id = id;
         this.fechaHora = fechaHora;
         this.estadoCita = estadoCita;
@@ -24,6 +26,7 @@ public class CitaDTOResponse {
         this.nombreServicio = nombreServicio;
         this.nombreMedico = nombreMedico;
         this.nombreSede = nombreSede;
+        this.precioServicio = precioServicio;
     }
 
     public Long getId() {
@@ -82,4 +85,12 @@ public class CitaDTOResponse {
         this.nombreSede = nombreSede;
     }
 
+    // 💡 Getters y Setters del nuevo campo
+    public Double getPrecioServicio() {
+        return precioServicio;
+    }
+
+    public void setPrecioServicio(Double precioServicio) {
+        this.precioServicio = precioServicio;
+    }
 }
