@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 "/api/sedes/activas",
                                 "/api/servicios/activos",
                                 "/api/medicos/filtrar",
-                                "api/medicos",
+                                "/api/medicos",
                                 "/api/medicos/activos",
                                 "/api/horarios/medico/**")
                         .permitAll()
